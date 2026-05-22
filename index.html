@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Wahl-O-Mat 1919 – Weimarer Republik</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..400&display=swap" rel="stylesheet">
+
+<style>
+/* ─── RESET & BASE ──────────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:none;text-size-adjust:none}
+body{min-height:100dvh;font-family:'Source Serif 4','Georgia',serif;font-size:clamp(1rem,.95rem + .25vw,1.125rem);line-height:1.65;color:var(--text);background:var(--bg);transition:background .3s,color .3s;-webkit-font-smoothing:antialiased}
+img{display:block;max-width:100%;height:auto}
+button{cursor:pointer;border:none;background:none;font:inherit}
+input{font:inherit}
+
+/* ─── DESIGN TOKENS ─────────────────────────────────────────────────── */
+:root,[data-theme="light"]{
+  --bg:         #f5f0e8;
+  --surface:    #faf7f0;
+  --surface-2:  #fff;
+  --border:     rgba(90,72,40,.15);
+  --divider:    rgba(90,72,40,.10);
+  --text:       #2a1f0e;
+  --muted:      #6b5c43;
+  --faint:      #b0a088;
+  --accent:     #8b1a1a;
+  --accent-h:   #6d1313;
+  --accent-hl:  rgba(139,26,26,.12);
+  --gold:       #c9973d;
+  --gold-h:     rgba(201,151,61,.18);
+  --success:    #3a6b2a;
+  --success-hl: rgba(58,107,42,.12);
+  --shadow-sm:  0 1px 3px rgba(42,31,14,.08);
+  --shadow-md:  0 4px 16px rgba(42,31,14,.10);
+  --shadow-lg:  0 12px 40px rgba(42,31,14,.14);
+  --r-sm:.375rem;--r-md:.5rem;--r-lg:.75rem;--r-xl:1rem;
+  --sp1:.25rem;--sp2:.5rem;--sp3:.75rem;--sp4:1rem;--sp6:1.5rem;--sp8:2rem;--sp10:2.5rem;--sp12:3rem;--sp16:4rem;
+  --transition:180ms cubic-bezier(.16,1,.3,1);
+}
+[data-theme="dark"]{
+  --bg:         #1a1510;
+  --surface:    #211c16;
+  --surface-2:  #28221a;
+  --border:     rgba(220,200,160,.12);
+  --divider:    rgba(220,200,160,.08);
+  --text:       #e8dfc8;
+  --muted:      #9b9080;
+  --faint:      #5c554a;
+  --accent:     #d46060;
+  --accent-h:   #b84040;
+  --accent-hl:  rgba(212,96,96,.15);
+  --gold:       #d4aa55;
+  --gold-h:     rgba(212,170,85,.18);
+  --success:    #6daa45;
+  --success-hl: rgba(109,170,69,.15);
+  --shadow-sm:  0 1px 3px rgba(0,0,0,.25);
+  --shadow-md:  0 4px 16px rgba(0,0,0,.35);
+  --shadow-lg:  0 12px 40px rgba(0,0,0,.45);
+}
+
+/* ─── LAYOUT ────────────────────────────────────────────────────────── */
+.container{max-width:760px;margin-inline:auto;padding-inline:clamp(var(--sp4),4vw,var(--sp8))}
+
+/* ─── HEADER ────────────────────────────────────────────────────────── */
+header{
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  padding:var(--sp4) 0;
+  position:sticky;top:0;z-index:50;
+  box-shadow:var(--shadow-sm);
+}
+.header-inner{display:flex;align-items:center;justify-content:space-between;gap:var(--sp3)}
+.logo{display:flex;align-items:center;gap:var(--sp3);text-decoration:none}
+.logo-icon{flex-shrink:0}
+.logo-text{font-family:'Playfair Display',serif;font-size:clamp(1rem,1.5vw + .5rem,1.35rem);font-weight:700;color:var(--text);line-height:1.15;letter-spacing:-.01em}
+.logo-sub{font-size:.75rem;color:var(--muted);font-family:'Source Serif 4',serif;font-style:italic;display:block}
+.theme-btn{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:background var(--transition),color var(--transition)}
+.theme-btn:hover{background:var(--accent-hl);color:var(--accent)}
+
+/* ─── PROGRESS BAR ──────────────────────────────────────────────────── */
+.progress-wrap{padding:var(--sp4) 0 0;display:none}
+.progress-wrap.visible{display:block}
+.progress-label{display:flex;justify-content:space-between;font-size:.8rem;color:var(--muted);margin-bottom:var(--sp2)}
+.progress-bar{height:6px;background:var(--divider);border-radius:var(--r-full,9999px);overflow:hidden}
+.progress-fill{height:100%;background:var(--accent);border-radius:inherit;transition:width .5s cubic-bezier(.16,1,.3,1)}
+
+/* ─── HERO ──────────────────────────────────────────────────────────── */
+#screen-intro{padding-block:clamp(var(--sp10),8vw,var(--sp16)) var(--sp12)}
+.hero-year{font-family:'Playfair Display',serif;font-size:clamp(5rem,20vw,10rem);font-weight:700;color:var(--accent);opacity:.12;line-height:1;position:absolute;top:-1.5rem;left:0;pointer-events:none;user-select:none}
+.hero-wrap{position:relative;padding-top:var(--sp6)}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:var(--sp2);font-size:.8rem;text-transform:uppercase;letter-spacing:.1em;color:var(--gold);font-weight:600;margin-bottom:var(--sp4)}
+.hero-title{font-family:'Playfair Display',serif;font-size:clamp(2rem,5vw,3.5rem);font-weight:700;color:var(--text);line-height:1.1;letter-spacing:-.02em;margin-bottom:var(--sp6)}
+.hero-desc{font-size:clamp(1rem,.95rem + .25vw,1.15rem);color:var(--muted);max-width:62ch;line-height:1.7;margin-bottom:var(--sp8)}
+.hero-meta{display:flex;flex-wrap:wrap;gap:var(--sp3) var(--sp6);margin-bottom:var(--sp8)}
+.meta-chip{display:flex;align-items:center;gap:var(--sp2);font-size:.85rem;color:var(--muted)}
+.meta-chip svg{color:var(--gold);flex-shrink:0}
+
+/* ─── BUTTONS ───────────────────────────────────────────────────────── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--sp2);padding:.8em 1.8em;border-radius:var(--r-md);font-size:clamp(.9rem,.85rem + .25vw,1rem);font-weight:600;transition:background var(--transition),color var(--transition),box-shadow var(--transition),transform var(--transition)}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:var(--accent);color:#fff;box-shadow:var(--shadow-sm)}
+.btn-primary:hover{background:var(--accent-h);box-shadow:var(--shadow-md)}
+.btn-ghost{color:var(--muted);padding:.8em 1.2em;border:1px solid var(--border)}
+.btn-ghost:hover{background:var(--accent-hl);color:var(--accent);border-color:var(--accent)}
+.btn-icon{width:44px;height:44px;padding:0;border-radius:var(--r-md)}
+
+/* ─── QUESTION SCREEN ───────────────────────────────────────────────── */
+#screen-quiz{padding-block:var(--sp8) var(--sp16);display:none}
+.question-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);padding:clamp(var(--sp6),4vw,var(--sp10));box-shadow:var(--shadow-md);animation:slideIn .4s cubic-bezier(.16,1,.3,1)}
+@keyframes slideIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideOut{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-20px)}}
+.q-context{font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;color:var(--gold);font-weight:600;margin-bottom:var(--sp3)}
+.q-number{font-family:'Playfair Display',serif;font-size:clamp(1.5rem,4vw,2.25rem);font-weight:700;color:var(--text);line-height:1.15;margin-bottom:var(--sp2)}
+.q-hint{font-size:.85rem;color:var(--muted);font-style:italic;margin-bottom:var(--sp6);padding-bottom:var(--sp6);border-bottom:1px solid var(--divider)}
+.answers{display:flex;flex-direction:column;gap:var(--sp3)}
+.answer-btn{
+  text-align:left;padding:var(--sp4) var(--sp5,1.25rem);
+  background:var(--surface-2);border:1.5px solid var(--border);
+  border-radius:var(--r-lg);color:var(--text);
+  font-size:clamp(.9rem,.85rem + .2vw,1rem);
+  line-height:1.5;
+  transition:all var(--transition);
+  display:flex;align-items:flex-start;gap:var(--sp3);
+  min-height:44px;
+}
+.answer-btn:hover{background:var(--accent-hl);border-color:var(--accent);color:var(--accent);box-shadow:var(--shadow-sm)}
+.answer-btn.selected{background:var(--accent-hl);border-color:var(--accent);color:var(--accent);font-weight:600;box-shadow:var(--shadow-sm)}
+.answer-letter{width:28px;height:28px;border-radius:50%;border:1.5px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;flex-shrink:0;margin-top:.1em;transition:background var(--transition),color var(--transition)}
+.answer-btn.selected .answer-letter{background:var(--accent);color:#fff;border-color:var(--accent)}
+.q-nav{display:flex;align-items:center;justify-content:space-between;gap:var(--sp3);margin-top:var(--sp6)}
+.q-counter{font-size:.85rem;color:var(--muted)}
+
+/* ─── HISTORICAL HINT ────────────────────────────────────────────────── */
+.hist-panel{
+  margin-top:var(--sp4);padding:var(--sp4);
+  background:var(--gold-h);border:1px solid rgba(201,151,61,.25);
+  border-radius:var(--r-md);font-size:.85rem;color:var(--muted);
+  display:none;
+  animation:fadeIn .3s ease;
+}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.hist-panel.visible{display:block}
+.hist-panel strong{color:var(--text)}
+
+/* ─── RESULTS SCREEN ────────────────────────────────────────────────── */
+#screen-results{padding-block:var(--sp8) var(--sp16);display:none}
+.results-header{text-align:center;margin-bottom:var(--sp10)}
+.results-title{font-family:'Playfair Display',serif;font-size:clamp(1.75rem,4vw,2.75rem);font-weight:700;color:var(--text);letter-spacing:-.02em;margin-bottom:var(--sp3)}
+.results-sub{color:var(--muted);font-size:clamp(.9rem,.85rem + .15vw,1rem)}
+.result-winner{
+  background:var(--surface);border:2px solid var(--accent);
+  border-radius:var(--r-xl);padding:var(--sp6) var(--sp8);
+  margin-bottom:var(--sp6);text-align:center;box-shadow:var(--shadow-md);
+  position:relative;overflow:hidden;
+}
+.result-winner::before{content:'';position:absolute;inset:0;background:var(--accent-hl);pointer-events:none}
+.winner-label{font-size:.8rem;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);font-weight:600;margin-bottom:var(--sp2)}
+.winner-name{font-family:'Playfair Display',serif;font-size:clamp(2rem,5vw,3rem);font-weight:700;color:var(--accent);letter-spacing:-.02em}
+.winner-score{font-size:1rem;color:var(--muted);margin-top:var(--sp1)}
+.party-bars{display:flex;flex-direction:column;gap:var(--sp3);margin-bottom:var(--sp8)}
+.party-row{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:var(--sp4);box-shadow:var(--shadow-sm)}
+.party-row-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--sp2);gap:var(--sp3)}
+.party-name{font-weight:700;color:var(--text);font-size:.95rem}
+.party-pct{font-size:.85rem;color:var(--muted);white-space:nowrap}
+.bar-wrap{height:10px;background:var(--divider);border-radius:var(--r-full,9999px);overflow:hidden}
+.bar-fill{height:100%;border-radius:inherit;transition:width 1s cubic-bezier(.16,1,.3,1);width:0}
+.party-info{font-size:.8rem;color:var(--muted);margin-top:var(--sp2);font-style:italic}
+.parties-title{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:600;color:var(--text);margin-bottom:var(--sp4)}
+.party-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(280px,100%),1fr));gap:var(--sp4);margin-bottom:var(--sp8)}
+.party-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:var(--sp5,1.25rem);box-shadow:var(--shadow-sm)}
+.pc-name{font-weight:700;color:var(--text);margin-bottom:var(--sp1);font-size:.95rem}
+.pc-full{font-size:.78rem;color:var(--muted);margin-bottom:var(--sp3)}
+.pc-desc{font-size:.85rem;color:var(--muted);line-height:1.6}
+.pc-match{display:inline-flex;align-items:center;gap:var(--sp1);font-size:.78rem;font-weight:700;padding:.2em .6em;border-radius:var(--r-full,9999px);margin-top:var(--sp3)}
+.pc-match.match-high{background:var(--success-hl);color:var(--success)}
+.pc-match.match-mid{background:var(--gold-h);color:#8a5b00}
+.pc-match.match-low{background:var(--accent-hl);color:var(--accent)}
+[data-theme="dark"] .pc-match.match-mid{color:var(--gold)}
+.restart-wrap{text-align:center;padding-top:var(--sp4);border-top:1px solid var(--divider)}
+
+/* ─── FOOTER ────────────────────────────────────────────────────────── */
+footer{padding:var(--sp8) 0;border-top:1px solid var(--divider);margin-top:var(--sp8)}
+.footer-inner{text-align:center;font-size:.8rem;color:var(--faint)}
+.footer-inner a{color:var(--muted);text-decoration:underline}
+
+/* ─── SKIP LINK ─────────────────────────────────────────────────────── */
+.skip-link{position:absolute;top:-100%;left:1rem;background:var(--accent);color:#fff;padding:.5rem 1rem;border-radius:0 0 var(--r-md) var(--r-md);z-index:100;font-size:.875rem}
+.skip-link:focus{top:0}
+
+/* ─── RESPONSIVE ────────────────────────────────────────────────────── */
+@media(max-width:480px){
+  .q-nav{flex-direction:column-reverse}
+  .q-nav .btn{width:100%}
+  .hero-meta{flex-direction:column;gap:var(--sp2)}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
+</style>
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Zum Inhalt springen</a>
+
+<!-- ─── HEADER ─── -->
+<header>
+  <div class="container">
+    <div class="header-inner">
+      <a href="#" class="logo" onclick="showIntro(event)" aria-label="Wahl-O-Mat 1919 – Zur Startseite">
+        <!-- SVG Logo: Weimarer Adler-Silhouette -->
+        <svg class="logo-icon" width="36" height="36" viewBox="0 0 36 36" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+          <rect width="36" height="36" rx="8" fill="var(--accent)" opacity=".12"/>
+          <text x="18" y="25" text-anchor="middle" font-size="22" fill="var(--accent)" font-family="Georgia,serif" font-weight="700">W</text>
+          <rect x="4" y="29" width="28" height="2" rx="1" fill="var(--gold)" opacity=".8"/>
+        </svg>
+        <div>
+          <span class="logo-text">Wahl-O-Mat 1919</span>
+          <span class="logo-sub">Weimarer Republik</span>
+        </div>
+      </a>
+      <button class="theme-btn" data-theme-toggle aria-label="Dunkelmodus umschalten" title="Dunkelmodus">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+    </div>
+    <!-- Progress (only visible during quiz) -->
+    <div class="progress-wrap" id="progressWrap" aria-hidden="true">
+      <div class="progress-label">
+        <span id="progressLabel">Frage 1 von 10</span>
+        <span id="progressPct">0 %</span>
+      </div>
+      <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ─── MAIN ─── -->
+<main id="main-content">
+  <div class="container">
+
+    <!-- ── INTRO SCREEN ── -->
+    <section id="screen-intro" aria-labelledby="hero-heading">
+      <div class="hero-wrap">
+        <div class="hero-year" aria-hidden="true">1919</div>
+        <p class="hero-eyebrow">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          Historisches Rollenspiel
+        </p>
+        <h1 class="hero-title" id="hero-heading">Welche Partei hättest du&nbsp;1919&nbsp;gewählt?</h1>
+        <p class="hero-desc">
+          Deutschland im Januar 1919: Das Kaiserreich ist gefallen, der Erste Weltkrieg verloren. Das Volk wählt die Nationalversammlung – die erste demokratische Wahl in Deutschland.
+          Beantworte 10 Fragen mit den Augen der Zeitgenossen und entdecke, welcher Partei du damals angehört hättest.
+        </p>
+        <div class="hero-meta">
+          <span class="meta-chip"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="m9 12 2 2 4-4"/></svg>10 Fragen</span>
+          <span class="meta-chip"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>ca. 5 Minuten</span>
+          <span class="meta-chip"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Keine Daten gespeichert</span>
+        </div>
+        <button class="btn btn-primary" id="startBtn" onclick="startQuiz()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
+          Jetzt starten
+        </button>
+      </div>
+    </section>
+
+    <!-- ── QUIZ SCREEN ── -->
+    <section id="screen-quiz" aria-live="polite">
+      <div class="question-card" id="questionCard" role="group" aria-labelledby="qNumber">
+        <p class="q-context" id="qContext">Thema</p>
+        <h2 class="q-number" id="qNumber">Frage</h2>
+        <p class="q-hint" id="qHint"></p>
+        <div class="answers" id="answersContainer" role="radiogroup" aria-labelledby="qNumber"></div>
+        <div class="hist-panel" id="histPanel" aria-live="polite"></div>
+        <nav class="q-nav" aria-label="Fragennavigation">
+          <button class="btn btn-ghost" id="prevBtn" onclick="prevQuestion()" aria-label="Vorherige Frage">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="15,18 9,12 15,6"/></svg>
+            Zurück
+          </button>
+          <span class="q-counter" id="qCounter" aria-live="polite"></span>
+          <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()" disabled aria-label="Nächste Frage">
+            Weiter
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="9,18 15,12 9,6"/></svg>
+          </button>
+        </nav>
+      </div>
+    </section>
+
+    <!-- ── RESULTS SCREEN ── -->
+    <section id="screen-results" aria-labelledby="results-heading">
+      <div class="results-header">
+        <h2 class="results-title" id="results-heading">Dein Ergebnis</h2>
+        <p class="results-sub">Basierend auf deinen Antworten hättest du&nbsp;1919 am ehesten diese Partei gewählt:</p>
+      </div>
+      <div class="result-winner" id="resultWinner" aria-live="polite">
+        <div class="winner-label">Beste Übereinstimmung</div>
+        <div class="winner-name" id="winnerName">–</div>
+        <div class="winner-score" id="winnerScore"></div>
+      </div>
+      <div class="party-bars" id="partyBars"></div>
+      <h3 class="parties-title">Die Parteien im Überblick</h3>
+      <div class="party-cards" id="partyCards"></div>
+      <div class="restart-wrap">
+        <button class="btn btn-primary" onclick="restartQuiz()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="1,4 1,10 7,10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/></svg>
+          Nochmal versuchen
+        </button>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <p>Didaktisches Lernmaterial zur Weimarer Republik &middot; Nationalversammlung 1919</p>
+      <p style="margin-top:.5rem">Die Parteizuordnungen basieren auf vereinfachten historischen Programmpunkten und dienen Bildungszwecken.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ─── DARK MODE ─── */
+(function(){
+  const t=document.querySelector('[data-theme-toggle]'),r=document.documentElement;
+  let d=matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';
+  r.setAttribute('data-theme',d);
+  function updateIcon(){
+    if(!t)return;
+    t.innerHTML=d==='dark'
+      ?'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>'
+      :'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+  }
+  updateIcon();
+  t&&t.addEventListener('click',()=>{d=d==='dark'?'light':'dark';r.setAttribute('data-theme',d);updateIcon();});
+})();
+
+/* ─── DATA ─── */
+const PARTIES = {
+  "SPD":  {full:"Sozialdemokratische Partei Deutschlands",color:"#c0392b",desc:"Die SPD kämpfte für eine parlamentarische Demokratie, Arbeiterrechte und soziale Gerechtigkeit. Sie war die treibende Kraft beim Übergang vom Kaiserreich zur Republik."},
+  "DDP":  {full:"Deutsche Demokratische Partei",color:"#2980b9",desc:"Die linksliberale DDP unterstützte die Weimarer Verfassung, Grundrechte und eine weltoffene, demokratische Gesellschaft."},
+  "Zentrum":{full:"Deutsche Zentrumspartei",color:"#8e44ad",desc:"Die Zentrumspartei vertrat die Interessen der deutschen Katholiken. Sie befürwortete den sozialen Ausgleich und spielte eine wichtige Rolle bei der Verfassungsgebung."},
+  "USPD": {full:"Unabhängige Sozialdemokratische Partei Deutschlands",color:"#d35400",desc:"Die USPD entstand als Abspaltung der SPD und forderte weitreichendere soziale Reformen – von Räterepublik bis gemäßigtem Sozialismus."},
+  "DVP":  {full:"Deutsche Volkspartei",color:"#1a6b3c",desc:"Die rechtsliberale DVP vertrat Wirtschaftsinteressen des Bürgertums. Sie akzeptierte die Republik, bevorzugte aber konservativere Politikansätze."},
+  "DNVP": {full:"Deutschnationale Volkspartei",color:"#2c3e50",desc:"Die DNVP lehnte die Republik und den Versailler Vertrag ab. Sie vertrat monarchistische und nationalkonservative Positionen."},
+  "KPD":  {full:"Kommunistische Partei Deutschlands",color:"#922b21",desc:"Die KPD forderte eine radikale Revolution nach sowjetischem Vorbild und die Errichtung einer Räterepublik in Deutschland."},
+  "NSDAP":{full:"Nationalsozialistische Deutsche Arbeiterpartei",color:"#717d7e",desc:"Die NSDAP war 1919 noch eine kleine Randpartei. Ihre zutiefst antidemokratische, antisemitische Ideologie war eine der größten Bedrohungen der Weimarer Republik."}
+};
+
+const QUESTIONS = [
+  {
+    context:"Staatsform",
+    question:"Das Kaiserreich ist gefallen. Welche Staatsform wünschst du dir für Deutschland?",
+    hint:"Deutschland steht vor einer Weichenstellung: Demokratie, Monarchie oder Revolution?",
+    historical:"Nach dem Novemberrevolution 1918 stritten die politischen Kräfte Deutschlands um die künftige Staatsform. Die Sozialdemokraten unter Ebert setzten sich schließlich für die parlamentarische Republik durch.",
+    answers:[
+      {text:"Eine parlamentarische Republik mit freien Wahlen",parties:["SPD","DDP"]},
+      {text:"Eine Räterepublik nach russischem Vorbild",parties:["KPD","USPD"]},
+      {text:"Eine konstitutionelle Monarchie – aber mit mehr Mitsprache des Volkes",parties:["DVP","Zentrum"]},
+      {text:"Eine starke nationale Regierung ohne Parteienstreit",parties:["DNVP","NSDAP"]}
+    ]
+  },
+  {
+    context:"Wahlrecht",
+    question:"Wer soll in der neuen Republik das Wahlrecht erhalten?",
+    hint:"Vor 1918 galt in Preußen noch das Dreiklassenwahlrecht – Reiche hatten mehr Stimmen als Arme.",
+    historical:"Die Weimarer Verfassung von 1919 führte das allgemeine, gleiche Wahlrecht ein – auch für Frauen. Das Frauenwahlrecht galt als revolutionäre Errungenschaft.",
+    answers:[
+      {text:"Alle Bürgerinnen und Bürger – gleiches Stimmrecht für alle ab 20 Jahren",parties:["SPD","DDP","KPD","USPD"]},
+      {text:"Nur Männer, aber gleiches Stimmrecht",parties:["Zentrum","DVP"]},
+      {text:"Stärkere Stimmen für Steuerzahler und Gebildete",parties:["DNVP","DVP"]},
+      {text:"Kein allgemeines Wahlrecht – das Volk braucht Führung",parties:["NSDAP"]}
+    ]
+  },
+  {
+    context:"Versailler Vertrag",
+    question:"Deutschland soll den Versailler Friedensvertrag unterzeichnen. Was hältst du davon?",
+    hint:"Der Vertrag von 1919 forderte von Deutschland hohe Reparationen, Gebietsabtretungen und das Kriegsschuldbekenntnis (§231).",
+    historical:"Die Unterzeichnung des Versailler Vertrags war eine der umstrittensten Entscheidungen der frühen Republik. SPD und Zentrum stimmten zu, um einen Wiederausbruch des Krieges zu verhindern – und wurden dafür von nationalistischen Kräften als 'Novemberverbrecher' beschimpft.",
+    answers:[
+      {text:"Ja – nur so kann Frieden gesichert und der Wiederaufbau beginnen",parties:["SPD","Zentrum","DDP"]},
+      {text:"Ablehnen – der Vertrag ist eine Schmach und schadet Deutschland dauerhaft",parties:["DNVP","NSDAP","DVP"]},
+      {text:"Neutral – verhandeln statt unterschreiben",parties:["USPD"]}
+    ]
+  },
+  {
+    context:"Wirtschaft & Arbeit",
+    question:"Wie soll die Wirtschaft Deutschlands künftig organisiert sein?",
+    hint:"Nach dem Krieg herrschten Inflation, Hunger und Massenarbeitslosigkeit. Die Frage nach wirtschaftlicher Kontrolle war existenziell.",
+    historical:"SPD und KPD forderten staatliche Eingriffe oder Verstaatlichung der Schlüsselindustrien. Liberale und konservative Parteien verteidigten das Privateigentum.",
+    answers:[
+      {text:"Staatskontrolle wichtiger Industrien zum Wohl der Arbeiterschaft",parties:["SPD","KPD"]},
+      {text:"Freie Marktwirtschaft mit minimalem Staatseingriff",parties:["DVP","DDP"]},
+      {text:"Soziale Marktwirtschaft – Ausgleich zwischen Kapital und Arbeit",parties:["Zentrum","DDP"]},
+      {text:"Nationale Wirtschaft – Deutschland zuerst",parties:["DNVP","NSDAP"]}
+    ]
+  },
+  {
+    context:"Frauenrechte",
+    question:"Frauen fordern gleiches Wahlrecht und politische Teilhabe. Wie stehst du dazu?",
+    hint:"Weltweit war das Frauenwahlrecht 1919 noch eine Ausnahme – Deutschland war eines der ersten Länder weltweit.",
+    historical:"Am 12. November 1918 wurde in Deutschland das Frauenwahlrecht eingeführt. Bei der Wahl zur Nationalversammlung am 19. Januar 1919 durften erstmals Frauen wählen und als Kandidatinnen antreten – 37 Frauen zogen in die Nationalversammlung ein.",
+    answers:[
+      {text:"Vollständige Gleichberechtigung – Frauen sollen wählen und kandidieren dürfen",parties:["SPD","DDP","USPD"]},
+      {text:"Wahlrecht ja, aber traditionelle Rollenbilder sollen erhalten bleiben",parties:["Zentrum"]},
+      {text:"Frauen gehören in Haus und Familie – kein Wahlrecht nötig",parties:["DNVP","NSDAP"]},
+      {text:"Gleichberechtigung als Teil der sozialistischen Revolution",parties:["KPD"]}
+    ]
+  },
+  {
+    context:"Religion & Staat",
+    question:"Wie soll das Verhältnis von Kirche und Staat in der neuen Republik aussehen?",
+    hint:"Das Kaiserreich war eng mit der Kirche verbunden. Die Weimarer Verfassung trennte erstmals Kirche und Staat.",
+    historical:"Artikel 137 der Weimarer Verfassung erklärte: 'Es besteht keine Staatskirche.' Die Zentrumspartei setzte jedoch konfessionelle Schulen und Kirchenrechte durch.",
+    answers:[
+      {text:"Klare Trennung: Religion ist Privatsache, der Staat ist weltlich",parties:["SPD","DDP","KPD"]},
+      {text:"Kirche als Werteankerpunkt – staatliche Förderung von Religion und konfessionellen Schulen",parties:["Zentrum"]},
+      {text:"Staatliche Neutralität bei Religionsfreiheit für alle",parties:["DVP","DDP"]},
+      {text:"Die christliche Kultur als Grundlage nationaler Identität stärken",parties:["DNVP"]}
+    ]
+  },
+  {
+    context:"Militär & Außenpolitik",
+    question:"Wie stark soll Deutschlands Militär nach dem verlorenen Krieg sein?",
+    hint:"Der Versailler Vertrag beschränkte die deutsche Armee auf 100.000 Mann ('Reichswehr'). Viele Offiziere blieben arbeitslos.",
+    historical:"Der Versailler Vertrag limitierte das Heer drastisch. Rechte Parteien nutzten die 'Dolchstoßlegende', um Linke für die Niederlage verantwortlich zu machen und eine schnelle Wiederbewaffnung zu fordern.",
+    answers:[
+      {text:"Eine kleine Verteidigungsarmee – Deutschlands Zukunft liegt im Frieden",parties:["SPD","DDP","USPD"]},
+      {text:"Deutschland braucht eine starke Armee zum Schutz seiner Grenzen",parties:["DNVP","DVP","NSDAP"]},
+      {text:"Internationale Abrüstung und Diplomatie statt Aufrüstung",parties:["SPD","DDP"]},
+      {text:"Rote Armee – Verteidigung der Revolution",parties:["KPD"]}
+    ]
+  },
+  {
+    context:"Bildung & Schule",
+    question:"Wie sollen Schulen in Deutschland organisiert sein?",
+    hint:"Im Kaiserreich gab es konfessionelle Schulen (für Katholiken und Protestanten getrennt) und staatliche Schulen.",
+    historical:"Der Streit um die Schule war im 'Kulturkampf' entstanden. Die Weimarer Verfassung sah Gemeinschaftsschulen vor, ließ aber konfessionelle Schulen auf Elternwunsch zu.",
+    answers:[
+      {text:"Staatliche Einheitsschule für alle – Bildung ist eine öffentliche Aufgabe",parties:["SPD","KPD","DDP"]},
+      {text:"Konfessionelle Schulen – Eltern sollen über die Weltanschauung entscheiden",parties:["Zentrum","DNVP"]},
+      {text:"Freie Schulwahl bei staatlicher Grundversorgung",parties:["DVP","DDP"]},
+      {text:"Nationale Erziehung im Geiste des Vaterlandes",parties:["NSDAP","DNVP"]}
+    ]
+  },
+  {
+    context:"Sozialpolitik",
+    question:"Wie soll Deutschland mit Armut, Wohnungsnot und dem Elend der Kriegsheimkehrer umgehen?",
+    hint:"Millionen von Soldaten kehrten verwundet und traumatisiert zurück. Wohnungsnot und Hunger prägten den Alltag der Arbeiterschaft.",
+    historical:"Der Achtstundentag und das Streikrecht wurden bereits 1918 im Stinnes-Legien-Abkommen zwischen Arbeitgebern und Gewerkschaften vereinbart – ein früher sozialpolitischer Erfolg.",
+    answers:[
+      {text:"Umfassende Sozialleistungen: Wohnungsbau, Krankenversicherung, Arbeitszeitgesetze",parties:["SPD","USPD","KPD"]},
+      {text:"Soziale Verantwortung durch kirchliche Wohlfahrt und Eigeninitiative",parties:["Zentrum"]},
+      {text:"Wirtschaftliches Wachstum schafft Wohlstand – weniger Staat, mehr Markt",parties:["DVP","DDP"]},
+      {text:"Deutsche zuerst – Sozialhilfe nur für 'würdige' nationale Volksgenossen",parties:["NSDAP","DNVP"]}
+    ]
+  },
+  {
+    context:"Nationale Identität",
+    question:"Was bedeutet für dich 'deutsch sein' in der neuen Republik?",
+    hint:"Nach der Niederlage und dem Zusammenbruch des Kaiserreichs suchten viele Deutsche nach neuer Identität und Orientierung.",
+    historical:"Die Frage nationaler Identität war 1919 hochpolitisch. Während Demokraten eine offene, staatsbürgerliche Identität vertraten, beschworen Nationalisten ein ethnisch-völkisches Deutschtum.",
+    answers:[
+      {text:"Staatsbürgerliche Identität – jede*r kann Deutsche*r sein, unabhängig von Herkunft",parties:["SPD","DDP"]},
+      {text:"Christlich-konservative Tradition als Grundlage der deutschen Kultur",parties:["Zentrum","DNVP"]},
+      {text:"Klassenbewusstsein – ich bin Arbeiter*in, nicht zuerst 'deutsch'",parties:["KPD","USPD"]},
+      {text:"Ethnisch-völkische Zugehörigkeit – Deutschland den Deutschen",parties:["NSDAP","DNVP"]}
+    ]
+  }
+];
+
+/* ─── STATE ─── */
+let currentQ = 0;
+let answers = new Array(QUESTIONS.length).fill(null);
+
+/* ─── SCREENS ─── */
+function show(id){['screen-intro','screen-quiz','screen-results'].forEach(s=>{
+  document.getElementById(s).style.display=s===id?'block':'none';
+});
+document.getElementById('progressWrap').className='progress-wrap'+(id==='screen-quiz'?' visible':'');
+}
+function showIntro(e){if(e)e.preventDefault();currentQ=0;answers=new Array(QUESTIONS.length).fill(null);show('screen-intro');}
+
+/* ─── QUIZ ─── */
+function startQuiz(){show('screen-quiz');renderQuestion();}
+
+function renderQuestion(){
+  const q=QUESTIONS[currentQ];
+  const card=document.getElementById('questionCard');
+  card.style.animation='none';
+  requestAnimationFrame(()=>{card.style.animation='slideIn .4s cubic-bezier(.16,1,.3,1)';});
+
+  document.getElementById('qContext').textContent=q.context;
+  document.getElementById('qNumber').textContent=q.question;
+  document.getElementById('qHint').textContent=q.hint;
+  document.getElementById('qCounter').textContent=(currentQ+1)+' / '+QUESTIONS.length;
+
+  const hist=document.getElementById('histPanel');
+  hist.className='hist-panel';
+
+  // Answers
+  const cont=document.getElementById('answersContainer');
+  cont.innerHTML='';
+  const letters=['A','B','C','D'];
+  q.answers.forEach((ans,i)=>{
+    const btn=document.createElement('button');
+    btn.className='answer-btn'+(answers[currentQ]===i?' selected':'');
+    btn.setAttribute('role','radio');
+    btn.setAttribute('aria-checked',answers[currentQ]===i?'true':'false');
+    btn.setAttribute('aria-label','Antwort '+letters[i]+': '+ans.text);
+    btn.innerHTML=`<span class="answer-letter" aria-hidden="true">${letters[i]}</span><span>${ans.text}</span>`;
+    btn.addEventListener('click',()=>selectAnswer(i));
+    cont.appendChild(btn);
+  });
+
+  // Show historical hint if already answered
+  if(answers[currentQ]!==null){showHint();}
+
+  updateNav();
+  updateProgress();
+}
+
+function selectAnswer(idx){
+  answers[currentQ]=idx;
+  document.querySelectorAll('.answer-btn').forEach((b,i)=>{
+    b.className='answer-btn'+(i===idx?' selected':'');
+    b.setAttribute('aria-checked',i===idx?'true':'false');
+  });
+  document.getElementById('nextBtn').disabled=false;
+  showHint();
+}
+
+function showHint(){
+  const q=QUESTIONS[currentQ];
+  const hist=document.getElementById('histPanel');
+  hist.innerHTML='<strong>📜 Historischer Hintergrund:</strong> '+q.historical;
+  hist.className='hist-panel visible';
+}
+
+function updateNav(){
+  document.getElementById('prevBtn').style.visibility=currentQ===0?'hidden':'visible';
+  const isLast=currentQ===QUESTIONS.length-1;
+  const next=document.getElementById('nextBtn');
+  next.disabled=answers[currentQ]===null;
+  next.innerHTML=isLast
+    ?'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="20,6 9,17 4,12"/></svg> Auswerten'
+    :'Weiter <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="9,18 15,12 9,6"/></svg>';
+}
+
+function updateProgress(){
+  const pct=Math.round((currentQ/QUESTIONS.length)*100);
+  document.getElementById('progressFill').style.width=pct+'%';
+  document.getElementById('progressLabel').textContent='Frage '+(currentQ+1)+' von '+QUESTIONS.length;
+  document.getElementById('progressPct').textContent=pct+' %';
+  document.getElementById('progressWrap').querySelector('.progress-bar').setAttribute('aria-valuenow',pct);
+}
+
+function nextQuestion(){
+  if(answers[currentQ]===null)return;
+  if(currentQ<QUESTIONS.length-1){currentQ++;renderQuestion();}
+  else{showResults();}
+}
+function prevQuestion(){if(currentQ>0){currentQ--;renderQuestion();}}
+
+/* ─── RESULTS ─── */
+function showResults(){
+  const scores={};
+  answers.forEach((ansIdx,qIdx)=>{
+    if(ansIdx===null)return;
+    const parties=QUESTIONS[qIdx].answers[ansIdx].parties;
+    parties.forEach(p=>{scores[p]=(scores[p]||0)+1;});
+  });
+
+  const total=QUESTIONS.length;
+  const sorted=Object.entries(scores).sort((a,b)=>b[1]-a[1]);
+  const winner=sorted[0];
+
+  // Winner banner
+  document.getElementById('winnerName').textContent=winner[0];
+  const pct=Math.round((winner[1]/total)*100);
+  document.getElementById('winnerScore').textContent=winner[1]+' von '+total+' Fragen ('+pct+' % Übereinstimmung)';
+
+  // Bars
+  const barsDiv=document.getElementById('partyBars');
+  barsDiv.innerHTML='';
+  sorted.forEach(([p,s])=>{
+    const pct2=Math.round((s/total)*100);
+    const info=PARTIES[p]||{color:'#888',full:p};
+    const row=document.createElement('div');
+    row.className='party-row';
+    row.innerHTML=`
+      <div class="party-row-top">
+        <span class="party-name">${p}</span>
+        <span class="party-pct">${s} Punkte &middot; ${pct2} %</span>
+      </div>
+      <div class="bar-wrap"><div class="bar-fill" style="background:${info.color}" data-pct="${pct2}"></div></div>
+      <div class="party-info">${info.full||''}</div>`;
+    barsDiv.appendChild(row);
+  });
+
+  // Party info cards
+  const cardsDiv=document.getElementById('partyCards');
+  cardsDiv.innerHTML='';
+  const allParties=Object.keys(PARTIES);
+  allParties.forEach(p=>{
+    const s=scores[p]||0;
+    const pct3=Math.round((s/total)*100);
+    const info=PARTIES[p];
+    let matchClass='match-low',matchLabel='Kaum Übereinstimmung';
+    if(pct3>=50){matchClass='match-high';matchLabel='Hohe Übereinstimmung';}
+    else if(pct3>=25){matchClass='match-mid';matchLabel='Mittlere Übereinstimmung';}
+    const card=document.createElement('div');
+    card.className='party-card';
+    card.innerHTML=`
+      <div class="pc-name">${p}</div>
+      <div class="pc-full">${info.full}</div>
+      <div class="pc-desc">${info.desc}</div>
+      <span class="pc-match ${matchClass}">${matchLabel}: ${pct3} %</span>`;
+    cardsDiv.appendChild(card);
+  });
+
+  show('screen-results');
+
+  // Animate bars after render
+  requestAnimationFrame(()=>{
+    setTimeout(()=>{
+      document.querySelectorAll('.bar-fill').forEach(b=>{
+        b.style.width=b.getAttribute('data-pct')+'%';
+      });
+    },100);
+  });
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function restartQuiz(){currentQ=0;answers=new Array(QUESTIONS.length).fill(null);showIntro(null);}
+</script>
+</body>
+</html>
